@@ -1,0 +1,108 @@
+from src.entity.item import Item
+from src.ui.screens.option_screen import OptionScreen
+from src.ui.screens.list_screen import ListScreen
+from src.ui.screens.detail_screen import DetailScreen
+from src.ui.screens.history_screen import HistoryScreen
+from src.data_handler import DataHandler
+from src.config import Config
+import kivy
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+
+
+kivy.require('2.1.0')
+
+
+class GUI(App):
+
+    def start(self, config: Config, data_handler: DataHandler):
+        self.config = config
+        self.data_handler = data_handler
+        self.window = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        self.current_view = None
+        self.run()
+
+    def build(self):
+        self.current_view = ListScreen(data_handler=self.data_handler,
+                                       to_option_view=self.to_option_view,
+                                       to_add_view=self.to_add_view,
+                                       to_detail_view=self.to_detail_view,
+                                       delete_item=self.delete_item,
+                                       orientation='vertical',
+                                       spacing=10,
+                                       padding=10)
+        self.window.add_widget(self.current_view)
+        return self.window
+
+    def to_detail_view(self, item: Item, index: int):
+        self.window.remove_widget(self.current_view)
+        self.current_view = DetailScreen(
+            data_handler=self.data_handler,
+            save_item=self.update_item,
+            to_history_view=self.to_history_view,
+            to_list_view=self.to_list_view,
+            orientation='vertical',
+            spacing=10,
+            padding=10)
+        self.current_view.set_item(index, item)
+        self.window.add_widget(self.current_view)
+
+    def to_list_view(self, _):
+        self.window.remove_widget(self.current_view)
+        self.current_view = ListScreen(data_handler=self.data_handler,
+                                       to_option_view=self.to_option_view,
+                                       to_add_view=self.to_add_view,
+                                       to_detail_view=self.to_detail_view,
+                                       delete_item=self.delete_item,
+                                       orientation='vertical',
+                                       spacing=10,
+                                       padding=10)
+        self.window.add_widget(self.current_view)
+
+    def to_add_view(self, _):
+        self.window.remove_widget(self.current_view)
+        self.current_view = DetailScreen(
+            data_handler=self.data_handler,
+            save_item=self.add_new_item,
+            to_list_view=self.to_list_view,
+            to_history_view=self.to_history_view,
+            orientation='vertical',
+            spacing=10,
+            padding=10)
+        self.window.add_widget(self.current_view)
+
+    def to_history_view(self, path, parent_item, parent_index):
+        self.window.remove_widget(self.current_view)
+        self.current_view = HistoryScreen(
+            path=path,
+            parent_item=parent_item,
+            parent_index=parent_index,
+            to_detail_view=self.to_detail_view)
+        self.window.add_widget(self.current_view)
+
+    def to_option_view(self, _):
+        self.window.remove_widget(self.current_view)
+        self.current_view = OptionScreen(
+            self.config,
+            self.to_list_view,
+            orientation='vertical',
+            spacing=10,
+            padding=10)
+        self.window.add_widget(self.current_view)
+
+    def add_new_item(self, **kargv):
+        item = kargv.get("item")
+        self.data_handler.items.append(item)
+        self.data_handler.save_items()
+
+    def update_item(self, **kargv):
+        index = kargv.get("index")
+        item = kargv.get("item")
+        self.data_handler.items[index] = item
+        self.data_handler.save_items()
+
+    def delete_item(self, **kargv):
+        index = kargv.get("index")
+        del self.data_handler.items[index]
+        self.data_handler.save_items()
+        self.to_list_view(None)
