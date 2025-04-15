@@ -78,7 +78,7 @@ class DetailScreen(BoxLayout):
             path_box = PathBox(
                 index=index, on_delete=self.on_path_delete,
                 to_history=self.to_history_view,
-                parent_item=None, parent_index=self.index,
+                parent_item=None, parent_index=None,
                 is_detail=False)
         self.path_inputs[index] = path_box
         self.path_layout.add_widget(path_box)
@@ -91,9 +91,17 @@ class DetailScreen(BoxLayout):
             pass
 
     def on_save(self, _):
+        paths = []
+        for i in self.path_inputs:
+            value = self.path_inputs[i].get_value()
+            paths.append(value)
         if (self.item):
-            self.save_item(item=Item(self.name.text), index=self.index)
+            item = Item(self.name.text)
+            item.setPaths(paths)
+            self.data_handler.update_item(
+                item=item, index=self.index)
         else:
             item = Item(self.name.text)
-            self.save_item(item=item)
+            item.setPaths(paths)
+            self.data_handler.add_item(item=item)
         self.to_list_view(None)

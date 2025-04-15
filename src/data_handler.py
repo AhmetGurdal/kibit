@@ -22,6 +22,19 @@ class DataHandler:
         except:
             pass
 
+    def add_item(self, item: Item):
+        self.items.append(item)
+        self.save_items()
+
+    def update_item(self, index: int, item: Item):
+        self.items[index] = item
+        self.save_items()
+
     def save_items(self):
+        print(self.config.getItemListFilepath())
+
         with open(self.config.getItemListFilepath(), "w") as f:
-            dump(self.items, f)
+            dump(list(map(DataHandler.item2JSON, self.items)), f, indent=4)
+
+    def item2JSON(item: Item):
+        return {"name": item.name, "paths": item.paths}

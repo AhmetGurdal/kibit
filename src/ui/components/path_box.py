@@ -50,6 +50,9 @@ class PathBox(BoxLayout):
             self.add_widget(history_button)
         self.add_widget(self.delete_button)
 
+    def get_value(self):
+        return self.path_input.text
+
     def on_history(self, _):
         self.to_history(path=self.path_input.text,
                         parent_item=self.parent_item,
