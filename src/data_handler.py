@@ -31,8 +31,6 @@ class DataHandler:
         self.save_items()
 
     def save_items(self):
-        print(self.config.getItemListFilepath())
-
         with open(self.config.getItemListFilepath(), "w") as f:
             dump(list(map(DataHandler.item2JSON, self.items)), f, indent=4)
 

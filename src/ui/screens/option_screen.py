@@ -1,3 +1,5 @@
+from src.config import Config
+
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
@@ -5,20 +7,14 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.checkbox import CheckBox
 
-from src.config import Config
-from tkinter import filedialog
-from tkinter import Tk
-
 
 class OptionScreen(BoxLayout):
 
-    def __init__(self, config: Config, on_back_button, **kwargs):
+    def __init__(self, config: Config, on_back_button, to_relative_path, **kwargs):
         super().__init__(**kwargs)
-        header = BoxLayout(orientation="horizontal",
-                           size=(1, 50), size_hint_y=None)
         self.config = config
-        github_box = BoxLayout(orientation='horizontal',
-                               padding=10, spacing=10)
+        header = BoxLayout(orientation="horizontal")
+
         # Title label
         title_label = Label(text="Options", font_size=20,
                             size=(1, 50), size_hint_y=None)
@@ -29,6 +25,8 @@ class OptionScreen(BoxLayout):
         header.add_widget(title_label)
         self.add_widget(header)
 
+        github_box = BoxLayout(orientation='horizontal',
+                               padding=10, spacing=10)
         self.repo_input = TextInput(
             hint_text="https://github.com/user/repo",
             multiline=False,
@@ -44,11 +42,14 @@ class OptionScreen(BoxLayout):
         self.on_start_checkbox = CheckBox()
         self.on_start_checkbox.bind(active=self.on_checkbox_active)
         self.add_widget(self.on_start_checkbox)
-
-        self.pick_folder_button = Button(
-            text="Choose Folder", size_hint=(1, 1))
-        self.pick_folder_button.bind(on_press=self.open_filechooser)
-        self.add_widget(self.pick_folder_button)
+        self.relative_paths_button = Button(
+            text="Relative Paths", size_hint_y=None, size=(1, 50))
+        self.relative_paths_button.bind(on_press=to_relative_path)
+        self.add_widget(self.relative_paths_button)
+        # self.pick_folder_button = Button(
+        #     text="Choose Folder", size_hint=(1, 1))
+        # self.pick_folder_button.bind(on_press=self.open_filechooser)
+        # self.add_widget(self.pick_folder_button)
 
     def add_to_startup(self, file_path=""):
         import os
@@ -65,12 +66,12 @@ class OptionScreen(BoxLayout):
         else:
             print('The checkbox', checkbox, 'is inactive')
 
-    def open_filechooser(self, _):
-        root = Tk()
-        root.withdraw()
-        root.folder = filedialog.askdirectory(
-            initialdir="/", title="Select Save Folder")
-        print(root.folder)
+    # def open_filechooser(self, _):
+    #     root = Tk()
+    #     root.withdraw()
+    #     root.folder = filedialog.askdirectory(
+    #         initialdir="/", title="Select Save Folder")
+    #     print(root.folder)
 
     def save_repo_url(self, _):
         repo_url = self.repo_input.text

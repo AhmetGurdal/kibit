@@ -3,6 +3,7 @@ from src.ui.screens.option_screen import OptionScreen
 from src.ui.screens.list_screen import ListScreen
 from src.ui.screens.detail_screen import DetailScreen
 from src.ui.screens.history_screen import HistoryScreen
+from src.ui.screens.relative_paths_screen import RelativePathsScreen
 from src.data_handler import DataHandler
 from src.config import Config
 import kivy
@@ -16,7 +17,7 @@ kivy.require('2.1.0')
 class GUI(App):
 
     def start(self, config: Config, data_handler: DataHandler):
-        self.config = config
+        self.appConfig = config
         self.data_handler = data_handler
         self.window = BoxLayout(orientation='vertical', padding=10, spacing=10)
         self.current_view = None
@@ -83,12 +84,24 @@ class GUI(App):
     def to_option_view(self, _):
         self.window.remove_widget(self.current_view)
         self.current_view = OptionScreen(
-            self.config,
+            self.appConfig,
             self.to_list_view,
+            to_relative_path=self.to_relative_path_view,
             orientation='vertical',
             spacing=10,
             padding=10)
         self.window.add_widget(self.current_view)
+
+    def to_relative_path_view(self, _):
+        self.window.remove_widget(self.current_view)
+        self.current_view = RelativePathsScreen(
+            relative_paths=self.appConfig.getRelativePaths(),
+            to_back=self.to_option_view, save_relative_paths=self.on_relative_paths_save)
+        self.window.add_widget(self.current_view)
+
+    def on_relative_paths_save(self, data):
+        self.appConfig.setRelativePaths(data)
+        self.appConfig.saveRelativePaths()
 
     def add_new_item(self, **kargv):
         item = kargv.get("item")

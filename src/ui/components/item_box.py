@@ -9,7 +9,7 @@ from kivy.uix.popup import Popup
 
 class ItemBox(BoxLayout):
 
-    def __init__(self, item: Item, index, is_even, to_detail_view, delete_item, **kwargs):
+    def __init__(self, item: Item, index, is_even, to_detail_view=None, delete_item=None, **kwargs):
         super().__init__(**kwargs)
         self.to_detail_view = to_detail_view
         self.delete_item = delete_item
