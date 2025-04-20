@@ -68,7 +68,7 @@ class PathBox(BoxLayout):
         root.withdraw()
         root.folder = filedialog.askdirectory(
             initialdir="/", title="Select Folder Path")
-        print(root.folder)
+        self.path_input.text = root.folder
 
     def show_popup(self, _):
         popup_content = BoxLayout(orientation='vertical', padding=10)

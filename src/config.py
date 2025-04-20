@@ -79,3 +79,23 @@ class Config:
             self.relative_paths = {}
             print("Error while importing relative paths!")
             pass
+
+    def convertRelative2Absolute(self, path: str):
+        while True:
+            start = path.find("{")
+            if (start == -1):
+                break
+            stop = path.find("}")
+            key = path[start+1:stop]
+            if (key in self.relative_paths):
+                path = path.replace("{" + key + "}", self.relative_paths[key])
+        return path
+
+    def convertAbsolute2Relative(self, path: str):
+        for i in self.relative_paths:
+            while True:
+                if (self.relative_paths[i] not in path):
+                    break
+                path = path.replace(self.relative_paths[i], "{" + i + "}")
+
+        return path

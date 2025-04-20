@@ -13,9 +13,13 @@ class DetailScreen(BoxLayout):
                  save_item,
                  to_list_view,
                  to_history_view,
+                 convertAbsolute2Relative,
+                 convertRelative2Absolute,
                  **kwargs):
         super().__init__(**kwargs)
         self.data_handler = data_handler
+        self.convertAbsolute2Relative = convertAbsolute2Relative
+        self.convertRelative2Absolute = convertRelative2Absolute
         self.item = None
         self.save_item = save_item
         self.to_history_view = to_history_view
@@ -94,7 +98,8 @@ class DetailScreen(BoxLayout):
         paths = []
         for i in self.path_inputs:
             value = self.path_inputs[i].get_value()
-            paths.append(value)
+
+            paths.append(self.convertAbsolute2Relative(value))
         if (self.item):
             item = Item(self.name.text)
             item.setPaths(paths)

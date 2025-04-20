@@ -42,6 +42,8 @@ class GUI(App):
             save_item=self.update_item,
             to_history_view=self.to_history_view,
             to_list_view=self.to_list_view,
+            convertAbsolute2Relative=self.appConfig.convertAbsolute2Relative,
+            convertRelative2Absolute=self.appConfig.convertRelative2Absolute,
             orientation='vertical',
             spacing=10,
             padding=10)
@@ -67,6 +69,8 @@ class GUI(App):
             save_item=self.add_new_item,
             to_list_view=self.to_list_view,
             to_history_view=self.to_history_view,
+            convertAbsolute2Relative=self.appConfig.convertAbsolute2Relative,
+            convertRelative2Absolute=self.appConfig.convertRelative2Absolute,
             orientation='vertical',
             spacing=10,
             padding=10)
