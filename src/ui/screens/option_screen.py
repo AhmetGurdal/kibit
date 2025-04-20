@@ -10,10 +10,11 @@ from kivy.uix.checkbox import CheckBox
 
 class OptionScreen(BoxLayout):
 
-    def __init__(self, config: Config, on_back_button, to_relative_path, **kwargs):
+    def __init__(self, config: Config, on_back_button, to_manual_path, to_relative_path, **kwargs):
         super().__init__(**kwargs)
         self.config = config
-        header = BoxLayout(orientation="horizontal")
+        header = BoxLayout(orientation="horizontal",
+                           size_hint_y=None, size=(1, 50))
 
         # Title label
         title_label = Label(text="Options", font_size=20,
@@ -33,7 +34,8 @@ class OptionScreen(BoxLayout):
             size=(50, 50),
             size_hint_y=None)
         github_box.add_widget(self.repo_input)
-
+        if (len(config.getGitLink()) > 0):
+            self.repo_input.text = config.getGitLink()
         self.submit_button = Button(
             text="Save", size=(100, 50), size_hint=(None, None))
         self.submit_button.bind(on_press=self.save_repo_url)
@@ -42,10 +44,14 @@ class OptionScreen(BoxLayout):
         self.on_start_checkbox = CheckBox()
         self.on_start_checkbox.bind(active=self.on_checkbox_active)
         self.add_widget(self.on_start_checkbox)
-        self.relative_paths_button = Button(
+        relative_paths_button = Button(
             text="Relative Paths", size_hint_y=None, size=(1, 50))
-        self.relative_paths_button.bind(on_press=to_relative_path)
-        self.add_widget(self.relative_paths_button)
+        relative_paths_button.bind(on_press=to_relative_path)
+        manual_commit_button = Button(text="Manual Save",
+                                      size_hint_y=None, size=(1, 50))
+        manual_commit_button.bind(on_press=to_manual_path)
+        self.add_widget(relative_paths_button)
+        self.add_widget(manual_commit_button)
         # self.pick_folder_button = Button(
         #     text="Choose Folder", size_hint=(1, 1))
         # self.pick_folder_button.bind(on_press=self.open_filechooser)
@@ -77,7 +83,7 @@ class OptionScreen(BoxLayout):
         repo_url = self.repo_input.text
         print(repo_url)
         try:
-            self.config.setGithubLink(repo_url)
+            self.config.setGitLink(repo_url)
             self.show_popup("Success", f"Repository URL saved: {repo_url}")
         except:
             self.show_popup(

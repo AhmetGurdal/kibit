@@ -13,6 +13,7 @@ class DataHandler:
 
     def load_items(self):
         try:
+            self.items = []
             with open(self.config.getItemListFilepath(), "r") as f:
                 data = load(f)
                 for i in data:

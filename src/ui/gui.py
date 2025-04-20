@@ -3,6 +3,7 @@ from src.ui.screens.option_screen import OptionScreen
 from src.ui.screens.list_screen import ListScreen
 from src.ui.screens.detail_screen import DetailScreen
 from src.ui.screens.history_screen import HistoryScreen
+from src.ui.screens.manual_save_screen import ManualSaveScreen
 from src.ui.screens.relative_paths_screen import RelativePathsScreen
 from src.data_handler import DataHandler
 from src.config import Config
@@ -76,10 +77,14 @@ class GUI(App):
             padding=10)
         self.window.add_widget(self.current_view)
 
-    def to_history_view(self, path, parent_item, parent_index):
+    def to_history_view(self, path, path_index, parent_item: Item, parent_index):
         self.window.remove_widget(self.current_view)
+        absolute_path = self.appConfig.convertRelative2Absolute(path)
+        print("ABC", parent_item.name)
         self.current_view = HistoryScreen(
-            path=path,
+            path=absolute_path,
+            path_index=path_index,
+            branch_name=f"{parent_item.name.replace(" ", "_")}_{path_index}",
             parent_item=parent_item,
             parent_index=parent_index,
             to_detail_view=self.to_detail_view)
@@ -90,6 +95,7 @@ class GUI(App):
         self.current_view = OptionScreen(
             self.appConfig,
             self.to_list_view,
+            to_manual_path=self.to_manual_commit_path,
             to_relative_path=self.to_relative_path_view,
             orientation='vertical',
             spacing=10,
@@ -101,6 +107,13 @@ class GUI(App):
         self.current_view = RelativePathsScreen(
             relative_paths=self.appConfig.getRelativePaths(),
             to_back=self.to_option_view, save_relative_paths=self.on_relative_paths_save)
+        self.window.add_widget(self.current_view)
+
+    def to_manual_commit_path(self, _):
+        self.window.remove_widget(self.current_view)
+        self.current_view = ManualSaveScreen(
+            on_back=self.to_option_view,
+            config=self.appConfig, dataHandler=self.data_handler)
         self.window.add_widget(self.current_view)
 
     def on_relative_paths_save(self, data):

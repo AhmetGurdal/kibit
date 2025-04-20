@@ -55,6 +55,7 @@ class PathBox(BoxLayout):
 
     def on_history(self, _):
         self.to_history(path=self.path_input.text,
+                        path_index=self.index,
                         parent_item=self.parent_item,
                         parent_index=self.parent_index)
 
