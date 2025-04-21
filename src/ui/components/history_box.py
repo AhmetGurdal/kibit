@@ -19,12 +19,12 @@ class HistoryBox(BoxLayout):
             1, 30), size_hint_y=None)
         self.commit_id_label = Label(text=f"{self.history.get_commit_id()}", size=(
             1, 30), size_hint_y=None)
-        self.load_button = Button(text='Load', size=(
-            1, 30), size_hint_y=None, size_hint_x=0.2)
-        self.load_button.bind(on_press=self.on_load)
+        # self.load_button = Button(text='Load', size=(
+        #     1, 30), size_hint_y=None, size_hint_x=0.2)
+        # self.load_button.bind(on_press=self.on_load)
         self.add_widget(self.time_label)
         self.add_widget(self.commit_id_label)
-        self.add_widget(self.load_button)
+        # self.add_widget(self.load_button)
 
     def on_load(self, _):
         pass

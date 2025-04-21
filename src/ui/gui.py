@@ -19,6 +19,7 @@ class GUI(App):
 
     def start(self, config: Config, data_handler: DataHandler):
         self.appConfig = config
+        self.title = "Kibit"
         self.data_handler = data_handler
         self.window = BoxLayout(orientation='vertical', padding=10, spacing=10)
         self.current_view = None
