@@ -35,12 +35,8 @@ In this view, you should give a name to your new item. After that, if 'Add Path'
 ![Add View - Added Path](ss/add_new_item_adding_path2.png)
 **Add View - Added Path** : After adding the path, You can click the button "Save" to finalize the adding item process. Then you will be redirected to list view.
 
-
-
-
 ![List View with Item](ss/list_view2.png)
 **List View with Item** : There you can see your new item. If you want to change anything about your item, you can do that in the detail view, by using the 'Detail' button next to item.
-
 
 ![Detail View](ss/detail_view.png)
 **Detail View** : In detail view, you can see that there is a new button next to our added paths which is called 'History'. In history view you can see the information about the previous commits to your adjusted git repository. In detail view, you can add new paths, change existing paths, delete paths or change the name of the item.
@@ -50,7 +46,12 @@ Since there is no commit action triggered, the history view will be empty, So, t
 ![Manual Save View](ss/manual_save_screen.png)
 **Manual Save View** : In this view, you can click the button 'Save' to trigger the commit action from local items to remote git repository.
 
-
 ![Manual Save View](ss/manual_save_screen_2.png)
 **Manual Save View 2** : 
-As such, you can see the logs of the action appearing in the text area below the buttons in this view.
+As a result, you can see the logs of the action appear in the text area below the buttons in this view.
+
+![Github](ss/github.png)
+**Github** : Then, you can check to see if the save you committed is actually in your private repository.
+
+![History View](ss/history_view.png)
+**History View** : Lastly you can check the last commits in the history view as well.
