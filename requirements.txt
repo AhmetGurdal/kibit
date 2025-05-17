@@ -1,0 +1,6 @@
+gitpython
+psutil
+oauthlib 
+requests_oauthlib
+kivy
+requests
