@@ -7,6 +7,8 @@ from src.ui.screens.manual_save_screen import ManualSaveScreen
 from src.ui.screens.relative_paths_screen import RelativePathsScreen
 from src.data_handler import DataHandler
 from src.process_handler import ProcessHandler
+from src.git_handler import GitHandler
+
 from src.config import Config
 import kivy
 from kivy.app import App
@@ -37,6 +39,9 @@ class GUI(App):
             self.process_handler.check_processes(self.data_handler)
             self.process_handler.update_ended_items(self.appConfig)
             sleep(10)
+
+    def git_update_item(self, item : Item):
+        GitHandler.init_and_update_item(item, self.appConfig)
             
     def build(self):
         Window.bind(on_request_close=self.on_request_close)
@@ -45,6 +50,7 @@ class GUI(App):
                                        to_add_view=self.to_add_view,
                                        to_detail_view=self.to_detail_view,
                                        delete_item=self.delete_item,
+                                       git_update_item=self.git_update_item,
                                        orientation='vertical',
                                        spacing=10,
                                        padding=10)
@@ -123,6 +129,7 @@ class GUI(App):
                                        to_add_view=self.to_add_view,
                                        to_detail_view=self.to_detail_view,
                                        delete_item=self.delete_item,
+                                       git_update_item=self.git_update_item,
                                        orientation='vertical',
                                        spacing=10,
                                        padding=10)

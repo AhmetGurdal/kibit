@@ -47,6 +47,6 @@ class DataHandler:
             dump(list(map(DataHandler.item2JSON, self.items)), f, indent=4)
 
     def item2JSON(item: Item):
-        if(len(item.process) > 0):
+        if(item.process != None and len(item.process) > 0):
             return {"name" : item.name, "process": item.process, "paths": item.paths}
         return {"name": item.name, "paths": item.paths}

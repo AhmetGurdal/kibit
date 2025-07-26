@@ -14,9 +14,11 @@ class ItemBox(BoxLayout):
                  is_even : bool, 
                  to_detail_view=None, 
                  delete_item=None,
+                 git_update_item=None,
                  **kwargs):
         super().__init__(**kwargs)
         self.to_detail_view = to_detail_view
+        self.git_update_item = git_update_item
         self.delete_item = delete_item
         self.index = index
         self.item = item
@@ -70,6 +72,8 @@ class ItemBox(BoxLayout):
         self.rect.pos = self.pos
 
     def update(self,_):
+        self.item.loading = True
+        self.git_update_item(self.item)
         pass
 
     def detail(self, _):

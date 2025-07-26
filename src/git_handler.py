@@ -9,12 +9,24 @@ from datetime import datetime
 class GitHandler:
 
     @staticmethod
+    def init_and_update_item(item: Item, config : Config) -> bool:
+        result = True
+        for index, path in enumerate(item.paths):
+                branch_name = item.getBranchName(index)
+                absolute_path = config.convertRelative2Absolute(path=path)
+                result = GitHandler.setup_git_repo(
+                    path=absolute_path, remote_url=config.getGitLink(), branch_name=branch_name)
+                result = GitHandler.git_push(
+                    repo_path=absolute_path, branch=branch_name)
+        return  result
+                
+    @staticmethod
     def update_item(item : Item, config : Config) -> dict:
         try:
             for index, path in enumerate(item.paths):
                 branch_name = item.getBranchName(index)
                 absolute_path = config.convertRelative2Absolute(path=path)
-                return  GitHandler.git_push(
+                return GitHandler.git_push(
                     repo_path=absolute_path, branch=branch_name)
         except Exception as e:
             print("ERR: ", e)
@@ -78,8 +90,10 @@ class GitHandler:
         try:
             repo = Repo(repo_path)
             try:
+                local_commit = repo.commit("HEAD")
+                remote_commit = repo.commit(f"origin/{branch}")  # or origin/master
                 repo.git.checkout(branch)
-                return len(repo.index.diff(None)) > 0 or len(repo.untracked_files) > 0
+                return local_commit.hexsha == remote_commit.hexsha
             except Exception as e:
                 print("Repo active branch issue", e)
         except GitCommandError as e:

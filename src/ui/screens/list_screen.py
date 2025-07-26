@@ -9,13 +9,14 @@ from kivy.clock import Clock
 
 class ListScreen(BoxLayout):
 
-    def __init__(self, data_handler: DataHandler, to_option_view, to_add_view, to_detail_view, delete_item, **kwargs):
+    def __init__(self, data_handler: DataHandler, to_option_view, to_add_view, to_detail_view, delete_item, git_update_item, **kwargs):
         super().__init__(**kwargs)
         # ScrollView container
         self.scroll_view = ScrollView(size_hint=(1, 1))
         self.data_handler = data_handler
         self.to_detail_view = to_detail_view
         self.delete_item = delete_item
+        self.git_update_item = git_update_item
         self.to_option_view = to_option_view
         self.to_add_view = to_add_view
         # Inner layout (to be scrolled)
@@ -27,7 +28,9 @@ class ListScreen(BoxLayout):
                           index=i, 
                           is_even=i % 2 == 0, 
                           to_detail_view=self.to_detail_view, 
-                          delete_item=self.delete_item)
+                          delete_item=self.delete_item, 
+                          git_update_item=self.git_update_item)
+                          
             self.layout.add_widget(btn)
 
         self.scroll_view.add_widget(self.layout)
@@ -52,7 +55,8 @@ class ListScreen(BoxLayout):
                           index=i, 
                           is_even=i % 2 == 0, 
                           to_detail_view=self.to_detail_view, 
-                          delete_item=self.delete_item)
+                          delete_item=self.delete_item,
+                          git_update_item=self.git_update_item)
             self.layout.add_widget(btn)
         self.scroll_view = ScrollView(size_hint=(1, 1))
         self.scroll_view.add_widget(self.layout)
