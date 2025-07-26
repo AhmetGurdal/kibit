@@ -18,7 +18,10 @@ class GitHandler:
                     path=absolute_path, remote_url=config.getGitLink(), branch_name=branch_name)
                 result = GitHandler.git_push(
                     repo_path=absolute_path, branch=branch_name)
-        return  result
+        print("Update is Completed!")
+        item.setLoading(False)
+        item.setUpToDate(True)
+        return result
                 
     @staticmethod
     def update_item(item : Item, config : Config) -> dict:
@@ -28,6 +31,9 @@ class GitHandler:
                 absolute_path = config.convertRelative2Absolute(path=path)
                 return GitHandler.git_push(
                     repo_path=absolute_path, branch=branch_name)
+            print("Update is Completed!")
+            item.setLoading(False)
+            item.setUpToDate(True)
         except Exception as e:
             print("ERR: ", e)
 
@@ -90,10 +96,17 @@ class GitHandler:
         try:
             repo = Repo(repo_path)
             try:
-                local_commit = repo.commit("HEAD")
-                remote_commit = repo.commit(f"origin/{branch}")  # or origin/master
-                repo.git.checkout(branch)
-                return local_commit.hexsha == remote_commit.hexsha
+                # repo.git.checkout(branch)
+                local_branch = repo.heads[branch]
+                remote_branch = repo.remotes.origin.refs[branch]
+
+                # Compare commits
+                behind = list(repo.iter_commits(f'{local_branch}..{remote_branch}'))
+                ahead = list(repo.iter_commits(f'{remote_branch}..{local_branch}'))
+                print(repo_path)
+                print("behind :",behind)
+                print("ahead : ", ahead)
+                return not behind and not ahead and not repo.is_dirty(untracked_files=True)
             except Exception as e:
                 print("Repo active branch issue", e)
         except GitCommandError as e:
