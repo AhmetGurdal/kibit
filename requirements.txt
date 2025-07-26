@@ -4,3 +4,4 @@ oauthlib
 requests_oauthlib
 kivy
 requests
+pystray

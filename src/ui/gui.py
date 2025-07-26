@@ -6,26 +6,40 @@ from src.ui.screens.history_screen import HistoryScreen
 from src.ui.screens.manual_save_screen import ManualSaveScreen
 from src.ui.screens.relative_paths_screen import RelativePathsScreen
 from src.data_handler import DataHandler
+from src.process_handler import ProcessHandler
 from src.config import Config
 import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-
+from kivy.core.window import Window
+import pystray
+from PIL import Image
+from threading import Event, Thread
+from time import sleep
 
 kivy.require('2.1.0')
 
-
 class GUI(App):
 
-    def start(self, config: Config, data_handler: DataHandler):
+    def start(self, config: Config, data_handler: DataHandler, process_handler : ProcessHandler):
+        self.tray_icon_running = Event()
+        self.tray_icon = None
         self.appConfig = config
         self.title = "Kibit"
         self.data_handler = data_handler
+        self.process_handler = process_handler
         self.window = BoxLayout(orientation='vertical', padding=10, spacing=10)
         self.current_view = None
         self.run()
 
+    def run_in_background(self):
+        while True:
+            self.process_handler.check_processes(self.data_handler)
+            self.process_handler.update_ended_items(self.appConfig)
+            sleep(10)
+            
     def build(self):
+        Window.bind(on_request_close=self.on_request_close)
         self.current_view = ListScreen(data_handler=self.data_handler,
                                        to_option_view=self.to_option_view,
                                        to_add_view=self.to_add_view,
@@ -35,7 +49,57 @@ class GUI(App):
                                        spacing=10,
                                        padding=10)
         self.window.add_widget(self.current_view)
+        if self.tray_icon_running.is_set():
+            self.tray_icon_running.wait(timeout=5)
         return self.window
+
+    def on_start(self):
+        Thread(target=self.run_tray_icon, daemon=True).start()
+
+    def on_request_close(self, *args):
+        thread = Thread(target=self.run_in_background, daemon=True)
+        thread.start()
+        self.hide_window()
+        return True 
+
+    def show_window(self, *args):
+        Window.show()
+
+    def hide_window(self, *args):
+        Window.hide()
+
+    def run_tray_icon(self):
+        try:
+            image = Image.open("./bat.png")
+            self.tray_icon = pystray.Icon(
+                'kibit',
+                image,
+                'Kibit',
+                menu=pystray.Menu(
+                    # pystray.MenuItem('Show App', self.show_window_from_tray),
+                    # pystray.MenuItem('Hide App', self.hide_window_from_tray),
+                    # pystray.Menu.SEPARATOR, 
+                    pystray.MenuItem('Quit', self.quit_app_from_tray)
+                )
+            )
+            print("Kibit: Starting tray icon.")
+            self.tray_icon_running.set()
+            self.tray_icon.run()
+        except Exception as e:
+            print(f"Kibit: Error running tray icon: {e}")
+        finally:
+            self.tray_icon_running.clear()
+
+    # def show_window_from_tray(self, icon, item):
+    #     App.get_running_app().show_window()
+        
+    # def hide_window_from_tray(self, icon, item):
+    #     App.get_running_app().hide_window()
+        
+    def quit_app_from_tray(self, icon, item):
+        if self.tray_icon:
+            self.tray_icon.stop()
+        App.get_running_app().stop()
 
     def to_detail_view(self, item: Item, index: int):
         self.window.remove_widget(self.current_view)
@@ -81,11 +145,10 @@ class GUI(App):
     def to_history_view(self, path, path_index, parent_item: Item, parent_index):
         self.window.remove_widget(self.current_view)
         absolute_path = self.appConfig.convertRelative2Absolute(path)
-        print("ABC", parent_item.name)
         self.current_view = HistoryScreen(
             path=absolute_path,
             path_index=path_index,
-            branch_name=f"{parent_item.name.replace(" ", "_")}_{path_index}",
+            branch_name=parent_item.getBranchName(path_index),
             parent_item=parent_item,
             parent_index=parent_index,
             to_detail_view=self.to_detail_view)

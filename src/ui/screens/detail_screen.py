@@ -34,11 +34,13 @@ class DetailScreen(BoxLayout):
             text="Add New Item", size=(1, 30), size_hint_y=None, padding=[0, 0, 150, 0])
         header.add_widget(self.title_label)
         form = BoxLayout(orientation="vertical",
-                         size=(1, 50), size_hint_y=None, padding=[0, 50, 0, 0])
+                         size=(1, 110), size_hint_y=None, padding=[0, 50, 0, 0], spacing=10)
         self.name = TextInput(hint_text="Name", size=(1, 30), size_hint_y=None)
         path_label = Label(
             text="Paths", size=(1, 30), size_hint_y=None, padding=[0, 50, 0, 0])
+        self.process_name = TextInput(hint_text="Process Name", size=(1, 30), size_hint_y=None)
         form.add_widget(self.name)
+        form.add_widget(self.process_name)
         form.add_widget(path_label)
         path_view = ScrollView()
         self.path_layout = BoxLayout(orientation='vertical', size_hint_y=None)
@@ -60,6 +62,7 @@ class DetailScreen(BoxLayout):
         self.item = item
         self.title_label.text = f"{item.name}"
         self.name.text = item.name
+        self.process_name.text = item.process
         # TODO: Set Paths
         for path in item.paths:
             path_box = PathBox(
@@ -98,15 +101,12 @@ class DetailScreen(BoxLayout):
         paths = []
         for i in self.path_inputs:
             value = self.path_inputs[i].get_value()
-
             paths.append(self.convertAbsolute2Relative(value))
+        item = Item(self.name.text, self.process_name.text)
+        item.setPaths(paths)
         if (self.item):
-            item = Item(self.name.text)
-            item.setPaths(paths)
             self.data_handler.update_item(
                 item=item, index=self.index)
         else:
-            item = Item(self.name.text)
-            item.setPaths(paths)
             self.data_handler.add_item(item=item)
         self.to_list_view(None)

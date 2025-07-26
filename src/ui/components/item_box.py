@@ -1,4 +1,5 @@
 from src.entity.item import Item
+from src.git_handler import GitHandler
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -6,10 +7,14 @@ from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
 from kivy.uix.popup import Popup
 
-
 class ItemBox(BoxLayout):
-
-    def __init__(self, item: Item, index, is_even, to_detail_view=None, delete_item=None, **kwargs):
+    def __init__(self, 
+                 item: Item, 
+                 index : int, 
+                 is_even : bool, 
+                 to_detail_view=None, 
+                 delete_item=None,
+                 **kwargs):
         super().__init__(**kwargs)
         self.to_detail_view = to_detail_view
         self.delete_item = delete_item
@@ -32,18 +37,40 @@ class ItemBox(BoxLayout):
                            halign='left', valign='middle')
         self.label.bind(size=self._update_label_text_align)
 
-        self.detail_button = Button(text='detail', size_hint_x=0.2)
+        self.update_button = Button(size_hint_x=0.1)
+        self.update_button.bind(on_press=self.update)
+        self.set_update_button()
+
+        self.detail_button = Button(text='Detail', size_hint_x=0.2)
         self.detail_button.bind(on_press=self.detail)
-        self.delete_button = Button(
-            text='Delete', size_hint_x=0.2, background_color=(1, 0, 0, 1))
+        self.delete_button = Button(text='Delete', size_hint_x=0.2, 
+                                    background_color=(1, 0, 0, 1))
         self.delete_button.bind(on_press=self.show_popup)
         self.add_widget(self.label)
+        self.add_widget(self.update_button)
         self.add_widget(self.detail_button)
         self.add_widget(self.delete_button)
+
+    def set_update_button(self):
+        if(self.item.loading):
+            self.update_button.disabled = True
+            self.update_button.text = "..."
+            self.update_button.color = "gray"
+        else:
+            self.update_button.disabled = False
+            if(not self.item.upToDate):
+                self.update_button.text = "X"
+                self.update_button.color = "red"
+            else:
+                self.update_button.text = "OK"
+                self.update_button.color = "green"
 
     def _update_rect(self, *args):
         self.rect.size = self.size
         self.rect.pos = self.pos
+
+    def update(self,_):
+        pass
 
     def detail(self, _):
         self.to_detail_view(self.item, self.index)

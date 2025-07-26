@@ -18,7 +18,7 @@ class Controller:
         dataHandler.load_items()
         for item in dataHandler.items:
             for index, path in enumerate(item.paths):
-                branch_name = f"{item.name.replace(" ", "_")}_{index}"
+                branch_name = item.getBranchName(index)
                 absolute_path = config.convertRelative2Absolute(path)
                 print("Abs path :", absolute_path)
                 GitHandler.setup_git_repo(

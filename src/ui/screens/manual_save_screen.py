@@ -55,7 +55,7 @@ class ManualSaveScreen(BoxLayout):
             sleep(3)
             self.append_text(f"-> {item.name}\n")
             for index, path in enumerate(item.paths):
-                branch_name = f"{item.name.replace("-", "_").replace(" ", "")}_{index}"
+                branch_name = item.getBranchName(index)
                 self.append_text(f"   ->Path :  {path}\n")
                 absolute_path = self.config.convertRelative2Absolute(path=path)
                 self.append_text(("    " * 2) + "->Repo Initialization:\n")
@@ -65,7 +65,7 @@ class ManualSaveScreen(BoxLayout):
                 self.append_text(("    " * 2) + "->Saving Operation:\n")
                 result = GitHandler.git_push(
                     repo_path=absolute_path, branch=branch_name)
-                self.append_text(("    " * 4) + result)
+                self.append_text(("    " * 4) + result.message)
             self.append_text(
                 "---------------------------------------------------------------------------------------------------------------------\n")
         if (callback):

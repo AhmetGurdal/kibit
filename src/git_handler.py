@@ -1,4 +1,6 @@
 from src.entity.history import History
+from src.entity.item import Item
+from src.config import Config
 
 from git import Repo, InvalidGitRepositoryError, GitCommandError
 from datetime import datetime
@@ -7,12 +9,23 @@ from datetime import datetime
 class GitHandler:
 
     @staticmethod
-    def git_push(repo_path: str, branch: str):
+    def update_item(item : Item, config : Config) -> dict:
+        try:
+            for index, path in enumerate(item.paths):
+                branch_name = item.getBranchName(index)
+                absolute_path = config.convertRelative2Absolute(path=path)
+                return  GitHandler.git_push(
+                    repo_path=absolute_path, branch=branch_name)
+        except Exception as e:
+            print("ERR: ", e)
+
+    @staticmethod
+    def git_push(repo_path: str, branch: str) -> dict:
         try:
             repo = Repo(repo_path)
         except:
             print("Repo not found!")
-            return "Repo not found!\n"
+            return {"success" : False, "message" : "Repo not found!\n"}
         try:
             repo.git.checkout(branch)
         except:
@@ -21,21 +34,22 @@ class GitHandler:
             repo.git.add(A=True)
             repo.git.commit(m='New Save')
             repo.git.push('--set-upstream', 'origin', branch)
-            return "SUCCESS : Data on path is saved!\n"
+            return {"success" : True, "message" : "SUCCESS : Data on path is saved!\n"}
         except GitCommandError as e:
             print(f"Push Error: {e}")
             if ("Your branch is up to date" in e.stdout):
-                return f"SUCCESS : Up to date!\n"
+                return {"success" : True, "message" : f"SUCCESS : Up to date!\n"}
             else:
                 print(e)
-                return f"ERROR : Push Error: Unknown Error!\n"
+                return {"success" : False, "message" : f"ERROR : Push Error: Unknown Error!\n"}
 
     @staticmethod
     def git_pull(repo_path: str, branch: str):
         try:
             repo = Repo(repo_path)
             repo.git.checkout(branch)
-            repo.git.pull('--set-upstream', 'origin', branch)
+            repo.remotes.origin.pull(branch)
+            # repo.git.pull('--set-upstream', 'origin', branch)
             return True
         except GitCommandError as e:
             print(f"Pull Error: {e}")
@@ -53,11 +67,24 @@ class GitHandler:
                         commit.committed_date)
                     history_list.append(
                         History(commit.hexsha, committed_datetime))
-            except e:
-                print("Repo active branch branch issue", e)
+            except Exception as e:
+                print("Repo active branch issue", e)
         except GitCommandError as e:
             print(f"Commit History Error: {e}")
         return history_list
+    
+    @staticmethod
+    def check_changes(repo_path:str, branch : str):
+        try:
+            repo = Repo(repo_path)
+            try:
+                repo.git.checkout(branch)
+                return len(repo.index.diff(None)) > 0 or len(repo.untracked_files) > 0
+            except Exception as e:
+                print("Repo active branch issue", e)
+        except GitCommandError as e:
+            print(f"Status Check Error: {e}")
+
 
     @staticmethod
     def setup_git_repo(path: str,

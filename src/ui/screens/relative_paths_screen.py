@@ -1,4 +1,3 @@
-from src.ui.components.item_box import ItemBox
 from src.ui.components.relative_path_box import RelativePathBox
 
 from kivy.uix.button import Button
