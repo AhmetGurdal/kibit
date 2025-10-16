@@ -62,7 +62,8 @@ class DetailScreen(BoxLayout):
         self.item = item
         self.title_label.text = f"{item.name}"
         self.name.text = item.name
-        self.process_name.text = item.process
+        if(item.process):
+            self.process_name.text = item.process
         # TODO: Set Paths
         for path in item.paths:
             path_box = PathBox(

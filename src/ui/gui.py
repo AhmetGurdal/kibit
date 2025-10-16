@@ -123,6 +123,7 @@ class GUI(App):
         self.window.add_widget(self.current_view)
 
     def to_list_view(self, _):
+        self.data_handler = DataHandler(self.appConfig)
         self.window.remove_widget(self.current_view)
         self.current_view = ListScreen(data_handler=self.data_handler,
                                        to_option_view=self.to_option_view,
